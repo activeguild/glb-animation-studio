@@ -1,10 +1,20 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { Header } from '@/components/layout/Header';
 import { FileUploader } from '@/components/controls/FileUploader';
-import { Scene3D } from '@/components/viewer/Scene3D';
 import { AnimationSelector } from '@/components/controls/AnimationSelector';
 import { ParameterPanel } from '@/components/controls/ParameterPanel';
+
+// Scene3DはSSRを無効化（Three.jsはブラウザでのみ動作）
+const Scene3D = dynamic(() => import('@/components/viewer/Scene3D').then(mod => ({ default: mod.Scene3D })), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg flex items-center justify-center">
+      <div className="text-gray-400">3Dビューワーを読み込み中...</div>
+    </div>
+  ),
+});
 
 export default function Home() {
   return (
