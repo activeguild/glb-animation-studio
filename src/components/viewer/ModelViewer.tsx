@@ -15,7 +15,8 @@ export function ModelViewer({ url }: ModelViewerProps) {
   const gltf = useGLTF(url);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
   const actionRef = useRef<THREE.AnimationAction | null>(null);
-  const modelRef = useRef<THREE.Group>(null);
+  const groupRef = useRef<THREE.Group>(null);
+  const sceneRef = useRef<THREE.Group | null>(null);
 
   const setModelData = useAppStore((state) => state.setModelData);
   const currentClip = useAppStore((state) => state.currentClip);
@@ -24,9 +25,10 @@ export function ModelViewer({ url }: ModelViewerProps) {
 
   // モデル読み込み時の初期化
   useEffect(() => {
-    if (!gltf.scene) return;
+    if (!gltf.scene || !groupRef.current) return;
 
     const scene = gltf.scene.clone();
+    sceneRef.current = scene;
 
     // バウンディングボックス計算
     const bounds = new THREE.Box3().setFromObject(scene);
@@ -45,6 +47,10 @@ export function ModelViewer({ url }: ModelViewerProps) {
       scene.scale.setScalar(scale);
     }
 
+    // groupに追加
+    groupRef.current.clear();
+    groupRef.current.add(scene);
+
     const modelData: ModelData = {
       scene,
       animations: gltf.animations || [],
@@ -55,7 +61,7 @@ export function ModelViewer({ url }: ModelViewerProps) {
 
     setModelData(modelData);
 
-    // AnimationMixerを作成
+    // AnimationMixerを作成（レンダリングされるシーンと同じオブジェクトに対して）
     mixerRef.current = new THREE.AnimationMixer(scene);
 
     return () => {
@@ -63,6 +69,9 @@ export function ModelViewer({ url }: ModelViewerProps) {
       if (mixerRef.current) {
         mixerRef.current.stopAllAction();
         mixerRef.current.uncacheRoot(scene);
+      }
+      if (groupRef.current) {
+        groupRef.current.clear();
       }
     };
   }, [gltf, setModelData]);
@@ -119,11 +128,7 @@ export function ModelViewer({ url }: ModelViewerProps) {
     }
   });
 
-  return (
-    <group ref={modelRef}>
-      <primitive object={gltf.scene} />
-    </group>
-  );
+  return <group ref={groupRef} />;
 }
 
 // GLTFローダーのプリロード設定
