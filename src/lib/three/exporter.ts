@@ -93,12 +93,20 @@ export async function exportAnimatedGLB(
     exportScene.updateMatrix();
     exportScene.updateMatrixWorld(true);
 
-    // Scene全体をエクスポート（RootNodeではなく）
-    const exportTarget = exportScene;
-    const exportingRootNode = false; // Scene全体をエクスポートする
+    // AnimationMixerを使ってトラックパスを自動解決
+    const mixer = new THREE.AnimationMixer(exportScene);
+    const resolvedAnimations = animations.map((clip) => {
+      const action = mixer.clipAction(clip);
+      return action.getClip();
+    });
 
-    // アニメーショントラックのパスを修正
-    const fixedAnimations = fixAnimationPaths(exportScene, animations, exportingRootNode);
+    console.log('Resolved animations:', resolvedAnimations.map(a => ({
+      name: a.name,
+      tracks: a.tracks.map(t => t.name)
+    })));
+
+    // Scene全体をエクスポート
+    const exportTarget = exportScene;
 
     exporter.parse(
       exportTarget,
@@ -118,6 +126,7 @@ export async function exportAnimatedGLB(
 
           // クリーンアップ
           URL.revokeObjectURL(url);
+          mixer.stopAllAction();
           console.log('Export completed successfully');
           resolve();
         } catch (error) {
@@ -130,9 +139,9 @@ export async function exportAnimatedGLB(
         reject(error);
       },
       {
-        binary: true,                  // GLB形式（バイナリ）
-        animations: fixedAnimations,   // 修正されたアニメーション
-        embedImages: true,             // 画像を埋め込み
+        binary: true,                    // GLB形式（バイナリ）
+        animations: resolvedAnimations,  // ミキサーで解決されたアニメーション
+        embedImages: true,               // 画像を埋め込み
         includeCustomExtensions: false,
         onlyVisible: true,
       }
