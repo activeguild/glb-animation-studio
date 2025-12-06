@@ -40,7 +40,7 @@ function fixAnimationPaths(scene: THREE.Group, animations: THREE.AnimationClip[]
     });
   }
 
-  // Scene全体をエクスポートする場合はRootNode.propertyに変換
+  // Scene全体をエクスポートする場合、GLTF互換のトラック名に変換
   const rootNode = scene.children[0];
   if (!rootNode) {
     console.warn('No root node found in scene');
@@ -48,16 +48,17 @@ function fixAnimationPaths(scene: THREE.Group, animations: THREE.AnimationClip[]
   }
 
   const targetName = rootNode.name || 'RootNode';
-  console.log(`Converting paths to target: "${targetName}"`);
 
   return animations.map((clip) => {
-    console.log(`Processing animation: ${clip.name}`);
     const newTracks = clip.tracks.map((track) => {
       const oldName = track.name;
       let newName = oldName;
 
+      // ".rotation[y]" -> "RootNode.rotation.y" に変換（GLTF互換形式）
       if (oldName.startsWith('.')) {
-        newName = `${targetName}${oldName}`;
+        newName = oldName.substring(1); // 先頭の"."を削除
+        newName = newName.replace(/\[(\w)\]/g, '.$1'); // "[x]" -> ".x"
+        newName = `${targetName}.${newName}`; // "RootNode.rotation.x"
       }
 
       console.log(`  Track: ${oldName} -> ${newName}`);
@@ -98,13 +99,12 @@ export async function exportAnimatedGLB(
     exportScene.updateMatrix();
     exportScene.updateMatrixWorld(true);
 
-    // RootNodeを直接エクスポート（Sceneではなく）
-    const rootNode = exportScene.children[0];
-    const exportTarget = rootNode || exportScene;
-    const exportingRootNode = rootNode !== null;
+    // Scene全体をエクスポート（RootNodeではなく）
+    const exportTarget = exportScene;
+    const exportingRootNode = false; // Scene全体をエクスポートする
 
     // アニメーショントラックのパスを修正
-    const fixedAnimations = fixAnimationPaths(scene, animations, exportingRootNode);
+    const fixedAnimations = fixAnimationPaths(exportScene, animations, exportingRootNode);
 
     exporter.parse(
       exportTarget,
