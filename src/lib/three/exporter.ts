@@ -5,14 +5,22 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
  * アニメーショントラックのパスを修正
  * シーン階層内の実際のオブジェクト名を使用
  */
-function fixAnimationPaths(scene: THREE.Group, animations: THREE.AnimationClip[]): THREE.AnimationClip[] {
-  console.log('=== Export Debug Info ===');
-  console.log('Scene structure:');
-  scene.traverse((obj) => {
-    console.log(`  ${obj.type}: "${obj.name}" (uuid: ${obj.uuid})`);
-  });
+function fixAnimationPaths(scene: THREE.Group, animations: THREE.AnimationClip[], exportingRootNode: boolean): THREE.AnimationClip[] {
+  console.log('=== Animation Track Info ===');
 
-  // RootNode（最初の子オブジェクト）を見つける
+  // RootNodeを直接エクスポートする場合は相対パスのまま
+  if (exportingRootNode) {
+    console.log('Exporting RootNode directly - keeping relative paths');
+    animations.forEach((clip) => {
+      console.log(`Animation: ${clip.name}`);
+      clip.tracks.forEach((track) => {
+        console.log(`  Track: ${track.name}`);
+      });
+    });
+    return animations; // 元のアニメーションをそのまま返す
+  }
+
+  // Scene全体をエクスポートする場合はRootNode.propertyに変換
   const rootNode = scene.children[0];
   if (!rootNode) {
     console.warn('No root node found in scene');
@@ -20,10 +28,7 @@ function fixAnimationPaths(scene: THREE.Group, animations: THREE.AnimationClip[]
   }
 
   const targetName = rootNode.name || 'RootNode';
-  console.log(`Target for animation: "${targetName}"`);
-  console.log(`Scene position:`, scene.position.toArray());
-  console.log(`Scene scale:`, scene.scale.toArray());
-  console.log(`RootNode position:`, rootNode.position.toArray());
+  console.log(`Converting paths to target: "${targetName}"`);
 
   return animations.map((clip) => {
     console.log(`Processing animation: ${clip.name}`);
@@ -31,7 +36,6 @@ function fixAnimationPaths(scene: THREE.Group, animations: THREE.AnimationClip[]
       const oldName = track.name;
       let newName = oldName;
 
-      // '.property' -> 'RootNode.property' に変換
       if (oldName.startsWith('.')) {
         newName = `${targetName}${oldName}`;
       }
@@ -64,11 +68,23 @@ export async function exportAnimatedGLB(
   return new Promise((resolve, reject) => {
     const exporter = new GLTFExporter();
 
+    // デバッグ用：シーン構造を確認
+    console.log('=== Export Scene Structure ===');
+    scene.traverse((obj) => {
+      console.log(`${obj.type}: "${obj.name}"`);
+    });
+
+    // RootNodeを直接エクスポート（Sceneではなく）
+    const rootNode = scene.children[0];
+    const exportTarget = rootNode || scene;
+    const exportingRootNode = rootNode !== null;
+    console.log(`Exporting: ${exportTarget.type} "${exportTarget.name}"`);
+
     // アニメーショントラックのパスを修正
-    const fixedAnimations = fixAnimationPaths(scene, animations);
+    const fixedAnimations = fixAnimationPaths(scene, animations, exportingRootNode);
 
     exporter.parse(
-      scene,
+      exportTarget,
       (result) => {
         try {
           // ArrayBufferをBlobに変換
