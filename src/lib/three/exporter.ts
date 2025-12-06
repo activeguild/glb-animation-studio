@@ -12,14 +12,12 @@ function fixAnimationPaths(scene: THREE.Group, animations: THREE.AnimationClip[]
     console.log(`  ${obj.type}: "${obj.name}" (uuid: ${obj.uuid})`);
   });
 
-  // シーン内の最初の子オブジェクト（通常はルートメッシュ）を見つける
-  const rootChild = scene.children[0];
-  if (!rootChild) {
-    console.warn('No children found in scene');
-    return animations;
+  // シーンの名前を確保（なければ設定）
+  if (!scene.name) {
+    scene.name = 'Scene';
   }
 
-  console.log(`Root child: ${rootChild.type} "${rootChild.name}"`);
+  console.log(`Scene name: "${scene.name}"`);
 
   return animations.map((clip) => {
     console.log(`Processing animation: ${clip.name}`);
@@ -27,9 +25,9 @@ function fixAnimationPaths(scene: THREE.Group, animations: THREE.AnimationClip[]
       const oldName = track.name;
       let newName = oldName;
 
-      // '.property' -> 'ObjectName.property' に変換
+      // '.property' -> 'Scene.property' に変換
       if (oldName.startsWith('.')) {
-        newName = rootChild.name ? `${rootChild.name}${oldName}` : `Object_1${oldName}`;
+        newName = `${scene.name}${oldName}`;
       }
 
       console.log(`  Track: ${oldName} -> ${newName}`);
