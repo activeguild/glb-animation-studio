@@ -64,6 +64,9 @@ export function ModelViewer({ url }: ModelViewerProps) {
     // AnimationMixerを作成（レンダリングされるシーンと同じオブジェクトに対して）
     mixerRef.current = new THREE.AnimationMixer(scene);
 
+    // mixerをuserDataに保存（エクスポート時にアクセスできるように）
+    scene.userData.mixer = mixerRef.current;
+
     return () => {
       // クリーンアップ
       if (mixerRef.current) {

@@ -14,12 +14,40 @@ export function ExportGLTF() {
   const setExportTrigger = useAppStore((state) => state.setExportTrigger);
 
   useEffect(() => {
-    if (!exportTrigger || !currentClip || !selectedPreset) return;
+    if (!exportTrigger || !selectedPreset) return;
 
     // エクスポート実行
     const exportScene = async () => {
       try {
         console.log('Exporting scene with animation...');
+
+        // シーン内のAnimationMixerからアニメーションクリップを取得
+        const animations: THREE.AnimationClip[] = [];
+        scene.traverse((obj) => {
+          // @ts-ignore - AnimationMixerは内部プロパティ
+          if (obj.animations && obj.animations.length > 0) {
+            animations.push(...obj.animations);
+          }
+        });
+
+        // AnimationMixerから直接アニメーションを取得
+        // ModelViewerでmixerが作成されているので、そのアクティブなアニメーションを使う
+        let activeAnimations: THREE.AnimationClip[] = [];
+        scene.traverse((obj: any) => {
+          if (obj.type === 'Group' && obj.userData?.mixer) {
+            const mixer = obj.userData.mixer as THREE.AnimationMixer;
+            const actions = mixer._actions || [];
+            activeAnimations = actions
+              .filter((action: any) => action._clip)
+              .map((action: any) => action._clip);
+          }
+        });
+
+        console.log('Active animations found:', activeAnimations.length);
+        console.log('Animation tracks:', activeAnimations.map(a => ({
+          name: a.name,
+          tracks: a.tracks.map(t => t.name)
+        })));
 
         const exporter = new GLTFExporter();
 
@@ -55,7 +83,7 @@ export function ExportGLTF() {
           },
           {
             binary: true,
-            animations: [currentClip], // 現在のアニメーションクリップ
+            animations: activeAnimations.length > 0 ? activeAnimations : undefined, // シーン内のアクティブなアニメーション
             embedImages: true,
             includeCustomExtensions: false,
             onlyVisible: true,
@@ -68,7 +96,7 @@ export function ExportGLTF() {
     };
 
     exportScene();
-  }, [exportTrigger, scene, currentClip, selectedPreset, setExportTrigger]);
+  }, [exportTrigger, scene, selectedPreset, setExportTrigger]);
 
   // 何もレンダリングしない
   return <></>;
