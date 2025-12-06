@@ -25,15 +25,12 @@ function fixAnimationPaths(scene: THREE.Group, animations: THREE.AnimationClip[]
 
         console.log(`Track: ${oldName} -> ${newName}`);
 
-        // トラックを複製
-        if (track instanceof THREE.NumberKeyframeTrack) {
-          return new THREE.NumberKeyframeTrack(newName, track.times, track.values);
-        } else if (track instanceof THREE.VectorKeyframeTrack) {
-          return new THREE.VectorKeyframeTrack(newName, track.times, track.values);
-        } else if (track instanceof THREE.QuaternionKeyframeTrack) {
-          return new THREE.QuaternionKeyframeTrack(newName, track.times, track.values);
-        }
-        return track;
+        // トラックをクローンして名前だけ変更
+        const clonedTrack = track.clone();
+        // @ts-ignore - nameプロパティは読み取り専用だが、ここでは変更が必要
+        clonedTrack.name = newName;
+
+        return clonedTrack;
       });
 
       return new THREE.AnimationClip(clip.name, clip.duration, newTracks);
@@ -63,15 +60,12 @@ function fixAnimationPaths(scene: THREE.Group, animations: THREE.AnimationClip[]
 
       console.log(`  Track: ${oldName} -> ${newName}`);
 
-      // トラックを複製
-      if (track instanceof THREE.NumberKeyframeTrack) {
-        return new THREE.NumberKeyframeTrack(newName, track.times, track.values);
-      } else if (track instanceof THREE.VectorKeyframeTrack) {
-        return new THREE.VectorKeyframeTrack(newName, track.times, track.values);
-      } else if (track instanceof THREE.QuaternionKeyframeTrack) {
-        return new THREE.QuaternionKeyframeTrack(newName, track.times, track.values);
-      }
-      return track;
+      // トラックをクローンして名前だけ変更
+      const clonedTrack = track.clone();
+      // @ts-ignore - nameプロパティは読み取り専用だが、ここでは変更が必要
+      clonedTrack.name = newName;
+
+      return clonedTrack;
     });
 
     return new THREE.AnimationClip(clip.name, clip.duration, newTracks);
