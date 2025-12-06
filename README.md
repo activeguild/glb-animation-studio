@@ -1,4 +1,24 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GLB Animation Studio
+
+A specialized internal tool for inspecting, fixing, and exporting GLB/GLTF 3D models, with a strong focus on animation integrity and compatibility.
+
+## Overview
+
+This project provides a web interface to load 3D models, preview their animations, and export them back to GLB format. It specifically addresses common issues found when exporting complex animations from various DCC tools to standard GLTF, such as converting split Euler rotation tracks to Quaternions and ensuring correct node hierarchy handling.
+
+## Features
+
+- **3D Model Viewer**: Interactive preview using Three.js / R3F.
+- **Animation Inspector**: Detect and play animations embedded in the model.
+- **Smart Export**:
+  - Automatically merges split animation tracks (e.g., `rotation.x`, `rotation.y`, `rotation.z`) into single tracks.
+  - Converts Euler rotation tracks to Quaternion tracks for full GLTF compatibility.
+  - Handles nested node animations correctly.
+  - Preserves hierarchy and material data.
+- **Tech Stack**:
+  - [Next.js](https://nextjs.org/) (App Router)
+  - [Three.js](https://threejs.org/) & [@react-three/fiber](https://docs.pmnd.rs/react-three-fiber)
+  - [Tailwind CSS](https://tailwindcss.com/)
 
 ## Getting Started
 
@@ -16,21 +36,13 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Development
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The main logic for animation processing and export is located in:
 
-## Learn More
+- `src/components/viewer/ExportGLTF.tsx`: Handles the extraction, conversion (Euler to Quaternion), and export of animation clips.
+- `src/components/viewer/ModelViewer.tsx`: Manages the 3D scene and model loading.
 
-To learn more about Next.js, take a look at the following resources:
+## License
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Private repository.
