@@ -74,31 +74,19 @@ export async function exportAnimatedGLB(
       console.log(`${obj.type}: "${obj.name}"`);
     });
 
-    // エクスポート前にシーンの変換をリセット
-    console.log('Original scene position:', scene.position.toArray());
-    console.log('Original scene rotation:', scene.rotation.toArray());
-    console.log('Original scene scale:', scene.scale.toArray());
-
-    // シーンをクローンしてエクスポート用に準備
-    const exportScene = scene.clone();
-
-    // 位置と回転をリセット（スケールは維持）
-    exportScene.position.set(0, 0, 0);
-    exportScene.rotation.set(0, 0, 0);
-    // スケールはそのまま（ModelViewerで設定されたスケールを保持）
-
-    console.log('Export scene position:', exportScene.position.toArray());
-    console.log('Export scene rotation:', exportScene.rotation.toArray());
-    console.log('Export scene scale:', exportScene.scale.toArray());
+    // シーン情報をログ出力
+    console.log('Scene position:', scene.position.toArray());
+    console.log('Scene rotation:', scene.rotation.toArray());
+    console.log('Scene scale:', scene.scale.toArray());
 
     // RootNodeを直接エクスポート（Sceneではなく）
-    const rootNode = exportScene.children[0];
-    const exportTarget = rootNode || exportScene;
+    const rootNode = scene.children[0];
+    const exportTarget = rootNode || scene;
     const exportingRootNode = rootNode !== null;
     console.log(`Exporting: ${exportTarget.type} "${exportTarget.name}"`);
 
     // アニメーショントラックのパスを修正
-    const fixedAnimations = fixAnimationPaths(exportScene, animations, exportingRootNode);
+    const fixedAnimations = fixAnimationPaths(scene, animations, exportingRootNode);
 
     exporter.parse(
       exportTarget,

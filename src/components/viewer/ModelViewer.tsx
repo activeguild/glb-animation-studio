@@ -37,9 +37,6 @@ export function ModelViewer({ url }: ModelViewerProps) {
     bounds.getCenter(center);
     bounds.getSize(size);
 
-    // 中心に配置
-    scene.position.sub(center);
-
     // スケール調整（最大サイズを2に正規化）
     const maxSize = Math.max(size.x, size.y, size.z);
     if (maxSize > 2) {
@@ -50,6 +47,9 @@ export function ModelViewer({ url }: ModelViewerProps) {
     // groupに追加
     groupRef.current.clear();
     groupRef.current.add(scene);
+
+    // 中心に配置（シーンではなくgroupRefで調整）
+    groupRef.current.position.sub(center);
 
     const modelData: ModelData = {
       scene,
