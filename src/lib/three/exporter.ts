@@ -18,6 +18,9 @@ function fixAnimationPaths(scene: THREE.Group, animations: THREE.AnimationClip[]
   }
 
   console.log(`Scene name: "${scene.name}"`);
+  console.log(`Scene position:`, scene.position.toArray());
+  console.log(`Scene scale:`, scene.scale.toArray());
+  console.log(`Scene rotation:`, scene.rotation.toArray());
 
   return animations.map((clip) => {
     console.log(`Processing animation: ${clip.name}`);
