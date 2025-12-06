@@ -75,13 +75,23 @@ export async function exportAnimatedGLB(
     });
 
     // シーン情報をログ出力
-    console.log('Scene position:', scene.position.toArray());
-    console.log('Scene rotation:', scene.rotation.toArray());
-    console.log('Scene scale:', scene.scale.toArray());
+    console.log('Original scene position:', scene.position.toArray());
+    console.log('Original scene rotation:', scene.rotation.toArray());
+    console.log('Original scene scale:', scene.scale.toArray());
+
+    // エクスポート用にシーンをクローンして、アニメーション適用済みの変換をリセット
+    const exportScene = scene.clone();
+    exportScene.position.set(0, 0, 0);
+    exportScene.rotation.set(0, 0, 0);
+    exportScene.updateMatrix();
+    exportScene.updateMatrixWorld(true);
+
+    console.log('Export scene position:', exportScene.position.toArray());
+    console.log('Export scene rotation:', exportScene.rotation.toArray());
 
     // RootNodeを直接エクスポート（Sceneではなく）
-    const rootNode = scene.children[0];
-    const exportTarget = rootNode || scene;
+    const rootNode = exportScene.children[0];
+    const exportTarget = rootNode || exportScene;
     const exportingRootNode = rootNode !== null;
     console.log(`Exporting: ${exportTarget.type} "${exportTarget.name}"`);
 
