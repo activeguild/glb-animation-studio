@@ -83,9 +83,6 @@ export async function exportAnimatedGLB(
   return new Promise((resolve, reject) => {
     const exporter = new GLTFExporter();
 
-    // デバッグログ（最小限）
-    console.log('Exporting animation...');
-
     // エクスポート用にシーンをクローンして、アニメーション適用済みの変換をリセット
     const exportScene = scene.clone();
     exportScene.position.set(0, 0, 0);
@@ -100,16 +97,13 @@ export async function exportAnimatedGLB(
       return action.getClip();
     });
 
-    console.log('Resolved animations:', resolvedAnimations.map(a => ({
+    console.log('Exporting with resolved animations:', resolvedAnimations.map(a => ({
       name: a.name,
       tracks: a.tracks.map(t => t.name)
     })));
 
-    // Scene全体をエクスポート
-    const exportTarget = exportScene;
-
     exporter.parse(
-      exportTarget,
+      exportScene,
       (result) => {
         try {
           // ArrayBufferをBlobに変換
