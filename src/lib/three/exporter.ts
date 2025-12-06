@@ -6,13 +6,24 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
  * シーン階層内の実際のオブジェクト名を使用
  */
 function fixAnimationPaths(scene: THREE.Group, animations: THREE.AnimationClip[], exportingRootNode: boolean): THREE.AnimationClip[] {
-  // RootNodeを直接エクスポートする場合、トラック名からドットを削除
+  // RootNodeを直接エクスポートする場合、GLTF互換のトラック名に変換
   if (exportingRootNode) {
+    const rootNode = scene.children[0];
+    const nodeName = rootNode?.name || 'RootNode';
+
     return animations.map((clip) => {
       const newTracks = clip.tracks.map((track) => {
         const oldName = track.name;
-        // ".rotation[y]" -> "rotation[y]" に変換
-        const newName = oldName.startsWith('.') ? oldName.substring(1) : oldName;
+        let newName = oldName;
+
+        // ".rotation[x]" -> "RootNode.rotation.x" に変換（GLTF互換形式）
+        if (oldName.startsWith('.')) {
+          newName = oldName.substring(1); // 先頭の"."を削除
+          newName = newName.replace(/\[(\w)\]/g, '.$1'); // "[x]" -> ".x"
+          newName = `${nodeName}.${newName}`; // "RootNode.rotation.x"
+        }
+
+        console.log(`Track: ${oldName} -> ${newName}`);
 
         // トラックを複製
         if (track instanceof THREE.NumberKeyframeTrack) {
