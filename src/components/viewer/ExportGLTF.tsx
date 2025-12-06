@@ -9,7 +9,6 @@ import { useAppStore } from '@/store/useAppStore';
 export function ExportGLTF() {
   const { scene } = useThree();
   const exportTrigger = useAppStore((state) => state.exportTrigger);
-  const currentClip = useAppStore((state) => state.currentClip);
   const selectedPreset = useAppStore((state) => state.selectedPreset);
   const setExportTrigger = useAppStore((state) => state.setExportTrigger);
 
@@ -21,38 +20,50 @@ export function ExportGLTF() {
       try {
         console.log('Exporting scene with animation...');
 
-        // シーン内のAnimationMixerからアニメーションクリップを取得
-        const animations: THREE.AnimationClip[] = [];
-        scene.traverse((obj) => {
-          // @ts-ignore - AnimationMixerは内部プロパティ
-          if (obj.animations && obj.animations.length > 0) {
-            animations.push(...obj.animations);
-          }
-        });
-
-        // AnimationMixerから直接アニメーションを取得
-        // ModelViewerでmixerが作成されているので、そのアクティブなアニメーションを使う
+        // シーンからAnimationMixerを持つオブジェクト（モデルのシーン）を見つける
+        let modelScene: THREE.Object3D | null = null;
         let activeAnimations: THREE.AnimationClip[] = [];
+
         scene.traverse((obj: any) => {
-          if (obj.type === 'Group' && obj.userData?.mixer) {
+          if (obj.userData?.mixer) {
+            modelScene = obj;
             const mixer = obj.userData.mixer as THREE.AnimationMixer;
+            console.log('Found mixer on object:', obj.type, obj.name);
+            console.log('Mixer actions:', mixer._actions?.length);
+
+            // mixerから実行中のアクションのクリップを取得
             const actions = mixer._actions || [];
             activeAnimations = actions
               .filter((action: any) => action._clip)
               .map((action: any) => action._clip);
+
+            console.log('Extracted animation clips:', activeAnimations.length);
+
+            if (activeAnimations.length > 0) {
+              console.log('Animation details:', activeAnimations.map(clip => ({
+                name: clip.name,
+                duration: clip.duration,
+                tracks: clip.tracks.map(t => ({
+                  name: t.name,
+                  type: t.constructor.name
+                }))
+              })));
+            }
           }
         });
 
-        console.log('Active animations found:', activeAnimations.length);
-        console.log('Animation tracks:', activeAnimations.map(a => ({
-          name: a.name,
-          tracks: a.tracks.map(t => t.name)
-        })));
+        if (!modelScene) {
+          console.error('Model scene with mixer not found');
+          setExportTrigger(false);
+          return;
+        }
+
+        console.log('Exporting model scene:', modelScene.type);
 
         const exporter = new GLTFExporter();
 
         exporter.parse(
-          scene,
+          modelScene, // Canvas全体ではなく、モデルのシーンのみをエクスポート
           (result) => {
             // ArrayBufferをBlobに変換
             const blob = new Blob([result as ArrayBuffer], {
@@ -83,7 +94,7 @@ export function ExportGLTF() {
           },
           {
             binary: true,
-            animations: activeAnimations.length > 0 ? activeAnimations : undefined, // シーン内のアクティブなアニメーション
+            animations: activeAnimations.length > 0 ? activeAnimations : undefined,
             embedImages: true,
             includeCustomExtensions: false,
             onlyVisible: true,
