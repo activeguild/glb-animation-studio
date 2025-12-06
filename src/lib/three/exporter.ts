@@ -6,18 +6,13 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
  * シーン階層内の実際のオブジェクト名を使用
  */
 function fixAnimationPaths(scene: THREE.Group, animations: THREE.AnimationClip[], exportingRootNode: boolean): THREE.AnimationClip[] {
-  console.log('=== Animation Track Info ===');
-
   // RootNodeを直接エクスポートする場合、トラック名からドットを削除
   if (exportingRootNode) {
-    console.log('Exporting RootNode directly - removing leading dot from paths');
     return animations.map((clip) => {
-      console.log(`Animation: ${clip.name}`);
       const newTracks = clip.tracks.map((track) => {
         const oldName = track.name;
         // ".rotation[y]" -> "rotation[y]" に変換
         const newName = oldName.startsWith('.') ? oldName.substring(1) : oldName;
-        console.log(`  Track: ${oldName} -> ${newName}`);
 
         // トラックを複製
         if (track instanceof THREE.NumberKeyframeTrack) {
@@ -82,16 +77,8 @@ export async function exportAnimatedGLB(
   return new Promise((resolve, reject) => {
     const exporter = new GLTFExporter();
 
-    // デバッグ用：シーン構造を確認
-    console.log('=== Export Scene Structure ===');
-    scene.traverse((obj) => {
-      console.log(`${obj.type}: "${obj.name}"`);
-    });
-
-    // シーン情報をログ出力
-    console.log('Original scene position:', scene.position.toArray());
-    console.log('Original scene rotation:', scene.rotation.toArray());
-    console.log('Original scene scale:', scene.scale.toArray());
+    // デバッグログ（最小限）
+    console.log('Exporting animation...');
 
     // エクスポート用にシーンをクローンして、アニメーション適用済みの変換をリセット
     const exportScene = scene.clone();
@@ -100,14 +87,10 @@ export async function exportAnimatedGLB(
     exportScene.updateMatrix();
     exportScene.updateMatrixWorld(true);
 
-    console.log('Export scene position:', exportScene.position.toArray());
-    console.log('Export scene rotation:', exportScene.rotation.toArray());
-
     // RootNodeを直接エクスポート（Sceneではなく）
     const rootNode = exportScene.children[0];
     const exportTarget = rootNode || exportScene;
     const exportingRootNode = rootNode !== null;
-    console.log(`Exporting: ${exportTarget.type} "${exportTarget.name}"`);
 
     // アニメーショントラックのパスを修正
     const fixedAnimations = fixAnimationPaths(scene, animations, exportingRootNode);
