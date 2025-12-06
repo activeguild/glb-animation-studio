@@ -3,6 +3,7 @@
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Grid } from '@react-three/drei';
 import { ModelViewer } from './ModelViewer';
+import { ExportGLTF } from './ExportGLTF';
 import { useAppStore } from '@/store/useAppStore';
 
 export function Scene3D() {
@@ -37,6 +38,9 @@ export function Scene3D() {
           rotateSpeed={0.5}
           zoomSpeed={0.5}
         />
+
+        {/* エクスポート機能 */}
+        <ExportGLTF />
       </Canvas>
 
       {/* モデルがない場合のメッセージ */}

@@ -1,58 +1,39 @@
 'use client';
 
-import { useState } from 'react';
 import { useAppStore } from '@/store/useAppStore';
-import { exportAnimatedGLB, generateFilename } from '@/lib/three/exporter';
 
 export function ExportButton() {
-  const [isExporting, setIsExporting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const modelData = useAppStore((state) => state.modelData);
   const currentClip = useAppStore((state) => state.currentClip);
   const selectedPreset = useAppStore((state) => state.selectedPreset);
+  const exportTrigger = useAppStore((state) => state.exportTrigger);
+  const setExportTrigger = useAppStore((state) => state.setExportTrigger);
 
-  const handleExport = async () => {
-    if (!modelData || !currentClip || !selectedPreset) {
-      setError('モデルとアニメーションを選択してください');
+  const handleExport = () => {
+    if (!currentClip || !selectedPreset) {
       return;
     }
 
-    setIsExporting(true);
-    setError(null);
-
-    try {
-      const filename = generateFilename(selectedPreset.name);
-      await exportAnimatedGLB(modelData.scene, [currentClip], filename);
-
-      // 成功メッセージ（3秒後に消える）
-      setTimeout(() => {
-        setIsExporting(false);
-      }, 1000);
-    } catch (err) {
-      console.error('Export error:', err);
-      setError('エクスポートに失敗しました');
-      setIsExporting(false);
-    }
+    // エクスポートをトリガー
+    setExportTrigger(true);
   };
 
-  const canExport = modelData && currentClip && selectedPreset;
+  const canExport = currentClip && selectedPreset;
 
   return (
     <div className="space-y-3">
       <button
         onClick={handleExport}
-        disabled={!canExport || isExporting}
+        disabled={!canExport || exportTrigger}
         className={`
           w-full py-3 rounded-lg font-semibold text-white transition-all
           ${
-            canExport && !isExporting
+            canExport && !exportTrigger
               ? 'bg-green-500 hover:bg-green-600 active:bg-green-700'
               : 'bg-gray-300 cursor-not-allowed'
           }
         `}
       >
-        {isExporting ? (
+        {exportTrigger ? (
           <span className="flex items-center justify-center gap-2">
             <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
               <circle
@@ -77,13 +58,7 @@ export function ExportButton() {
         )}
       </button>
 
-      {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-700">{error}</p>
-        </div>
-      )}
-
-      {!canExport && !error && (
+      {!canExport && (
         <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
           <p className="text-xs text-yellow-700">
             モデルをアップロードし、アニメーションを適用してからエクスポートしてください

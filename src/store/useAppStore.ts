@@ -18,6 +18,7 @@ interface AppState {
   // UI状態
   activeCategory: AnimationCategory;
   searchQuery: string;
+  exportTrigger: boolean;
 
   // アクション
   setUploadedFile: (file: File, url: string) => void;
@@ -28,6 +29,7 @@ interface AppState {
   setIsPlaying: (isPlaying: boolean) => void;
   setActiveCategory: (category: AnimationCategory) => void;
   setSearchQuery: (query: string) => void;
+  setExportTrigger: (trigger: boolean) => void;
   reset: () => void;
 }
 
@@ -49,6 +51,7 @@ export const useAppStore = create<AppState>((set) => ({
   isPlaying: false,
   activeCategory: 'rotation',
   searchQuery: '',
+  exportTrigger: false,
 
   // アクション実装
   setUploadedFile: (file, url) => set({ uploadedFile: { file, url } }),
@@ -69,6 +72,8 @@ export const useAppStore = create<AppState>((set) => ({
 
   setSearchQuery: (query) => set({ searchQuery: query }),
 
+  setExportTrigger: (trigger) => set({ exportTrigger: trigger }),
+
   reset: () => set({
     uploadedFile: null,
     modelData: null,
@@ -78,5 +83,6 @@ export const useAppStore = create<AppState>((set) => ({
     isPlaying: false,
     activeCategory: 'rotation',
     searchQuery: '',
+    exportTrigger: false,
   }),
 }));
