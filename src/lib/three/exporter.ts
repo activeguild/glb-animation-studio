@@ -12,15 +12,18 @@ function fixAnimationPaths(scene: THREE.Group, animations: THREE.AnimationClip[]
     console.log(`  ${obj.type}: "${obj.name}" (uuid: ${obj.uuid})`);
   });
 
-  // シーンの名前を確保（なければ設定）
-  if (!scene.name) {
-    scene.name = 'Scene';
+  // RootNode（最初の子オブジェクト）を見つける
+  const rootNode = scene.children[0];
+  if (!rootNode) {
+    console.warn('No root node found in scene');
+    return animations;
   }
 
-  console.log(`Scene name: "${scene.name}"`);
+  const targetName = rootNode.name || 'RootNode';
+  console.log(`Target for animation: "${targetName}"`);
   console.log(`Scene position:`, scene.position.toArray());
   console.log(`Scene scale:`, scene.scale.toArray());
-  console.log(`Scene rotation:`, scene.rotation.toArray());
+  console.log(`RootNode position:`, rootNode.position.toArray());
 
   return animations.map((clip) => {
     console.log(`Processing animation: ${clip.name}`);
@@ -28,9 +31,9 @@ function fixAnimationPaths(scene: THREE.Group, animations: THREE.AnimationClip[]
       const oldName = track.name;
       let newName = oldName;
 
-      // '.property' -> 'Scene.property' に変換
+      // '.property' -> 'RootNode.property' に変換
       if (oldName.startsWith('.')) {
-        newName = `${scene.name}${oldName}`;
+        newName = `${targetName}${oldName}`;
       }
 
       console.log(`  Track: ${oldName} -> ${newName}`);
