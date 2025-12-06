@@ -8,16 +8,30 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 function fixAnimationPaths(scene: THREE.Group, animations: THREE.AnimationClip[], exportingRootNode: boolean): THREE.AnimationClip[] {
   console.log('=== Animation Track Info ===');
 
-  // RootNodeを直接エクスポートする場合は相対パスのまま
+  // RootNodeを直接エクスポートする場合、トラック名からドットを削除
   if (exportingRootNode) {
-    console.log('Exporting RootNode directly - keeping relative paths');
-    animations.forEach((clip) => {
+    console.log('Exporting RootNode directly - removing leading dot from paths');
+    return animations.map((clip) => {
       console.log(`Animation: ${clip.name}`);
-      clip.tracks.forEach((track) => {
-        console.log(`  Track: ${track.name}`);
+      const newTracks = clip.tracks.map((track) => {
+        const oldName = track.name;
+        // ".rotation[y]" -> "rotation[y]" に変換
+        const newName = oldName.startsWith('.') ? oldName.substring(1) : oldName;
+        console.log(`  Track: ${oldName} -> ${newName}`);
+
+        // トラックを複製
+        if (track instanceof THREE.NumberKeyframeTrack) {
+          return new THREE.NumberKeyframeTrack(newName, track.times, track.values);
+        } else if (track instanceof THREE.VectorKeyframeTrack) {
+          return new THREE.VectorKeyframeTrack(newName, track.times, track.values);
+        } else if (track instanceof THREE.QuaternionKeyframeTrack) {
+          return new THREE.QuaternionKeyframeTrack(newName, track.times, track.values);
+        }
+        return track;
       });
+
+      return new THREE.AnimationClip(clip.name, clip.duration, newTracks);
     });
-    return animations; // 元のアニメーションをそのまま返す
   }
 
   // Scene全体をエクスポートする場合はRootNode.propertyに変換
