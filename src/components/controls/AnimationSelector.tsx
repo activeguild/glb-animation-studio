@@ -21,8 +21,6 @@ export function AnimationSelector() {
   const selectPreset = useAppStore((state) => state.selectPreset);
   const animationParams = useAppStore((state) => state.animationParams);
   const setCurrentClip = useAppStore((state) => state.setCurrentClip);
-  const isPlaying = useAppStore((state) => state.isPlaying);
-  const setIsPlaying = useAppStore((state) => state.setIsPlaying);
 
   const presets = presetsByCategory[activeCategory];
 

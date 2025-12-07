@@ -67,14 +67,16 @@ export function ModelViewer({ url }: ModelViewerProps) {
     // mixerをuserDataに保存（エクスポート時にアクセスできるように）
     scene.userData.mixer = mixerRef.current;
 
+    const currentGroup = groupRef.current;
+    
     return () => {
       // クリーンアップ
       if (mixerRef.current) {
         mixerRef.current.stopAllAction();
         mixerRef.current.uncacheRoot(scene);
       }
-      if (groupRef.current) {
-        groupRef.current.clear();
+      if (currentGroup) {
+        currentGroup.clear();
       }
     };
   }, [gltf, setModelData]);
@@ -134,7 +136,3 @@ export function ModelViewer({ url }: ModelViewerProps) {
   return <group ref={groupRef} />;
 }
 
-// GLTFローダーのプリロード設定
-useGLTF.preload = (url: string) => {
-  return useGLTF(url);
-};

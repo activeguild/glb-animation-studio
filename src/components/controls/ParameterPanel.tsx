@@ -14,7 +14,7 @@ export function ParameterPanel() {
   const isPlaying = useAppStore((state) => state.isPlaying);
   const setIsPlaying = useAppStore((state) => state.setIsPlaying);
 
-  const handleParamChange = (key: string, value: any) => {
+  const handleParamChange = (key: string, value: number | string) => {
     updateParams({ [key]: value });
 
     // パラメータ変更時にアニメーションを再生成
