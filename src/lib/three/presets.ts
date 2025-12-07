@@ -489,6 +489,9 @@ export * from './presetsScale';
 // 複合系をインポート
 export * from './presetsCombined';
 
+// エモート系をインポート
+export * from './presetsEmote';
+
 // イージング系をインポート
 export * from './presetsEasing';
 
@@ -496,6 +499,7 @@ export * from './presetsEasing';
 import * as scale from './presetsScale';
 import * as combined from './presetsCombined';
 import * as easing from './presetsEasing';
+import * as emote from './presetsEmote';
 
 export const allPresets: AnimationPreset[] = [
   // 回転系（12種類）
@@ -558,6 +562,16 @@ export const allPresets: AnimationPreset[] = [
   combined.shake,
   combined.glitch,
 
+  // エモート系（8種類）
+  emote.jump,
+  emote.nod,
+  emote.shakeHead,
+  emote.surprise,
+  emote.happy,
+  emote.dizzy,
+  emote.shiver,
+  emote.bow,
+
   // イージング系（8種類）
   easing.bounceIn,
   easing.bounceOut,
@@ -575,5 +589,7 @@ export const presetsByCategory = {
   translation: allPresets.filter((p) => p.category === 'translation'),
   scale: allPresets.filter((p) => p.category === 'scale'),
   combined: allPresets.filter((p) => p.category === 'combined'),
+  emote: allPresets.filter((p) => p.category === 'emote'),
   easing: allPresets.filter((p) => p.category === 'easing'),
 };
+

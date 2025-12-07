@@ -1,5 +1,5 @@
 
-export type AnimationCategory = 'rotation' | 'translation' | 'scale' | 'combined' | 'easing';
+export type AnimationCategory = 'rotation' | 'translation' | 'scale' | 'combined' | 'easing' | 'emote';
 
 export type EasingType =
   | 'linear'
