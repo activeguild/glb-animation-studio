@@ -4,6 +4,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { Slider } from '../ui/Slider';
 import { generateAnimationClip } from '@/lib/three/animationGenerator';
 import { EasingType } from '@/types/animation';
+import { ExportButton } from './ExportButton';
 
 export function ParameterPanel() {
   const selectedPreset = useAppStore((state) => state.selectedPreset);
@@ -140,6 +141,10 @@ export function ParameterPanel() {
         >
           ⏹
         </button>
+      </div>
+
+      <div className="border-t border-gray-200 pt-4">
+        <ExportButton />
       </div>
     </div>
   );
