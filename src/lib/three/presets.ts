@@ -493,7 +493,6 @@ export * from './presetsCombined';
 export * from './presetsEasing';
 
 // すべてのプリセットを配列にまとめる
-import { AnimationPreset } from '@/types/preset';
 import * as scale from './presetsScale';
 import * as combined from './presetsCombined';
 import * as easing from './presetsEasing';

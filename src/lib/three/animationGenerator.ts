@@ -34,7 +34,6 @@ export function generateAnimationClip(
       ) {
         const originalValues = Array.from(track.values);
         const easedValues = applyEasingToValues(originalValues, params.easing);
-        // @ts-ignore - valuesは読み取り専用だがここでは書き換える必要がある
         track.values = new Float32Array(easedValues);
       }
     });

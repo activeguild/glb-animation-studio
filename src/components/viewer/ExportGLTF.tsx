@@ -21,21 +21,21 @@ export function ExportGLTF() {
         console.log('Exporting scene with animation...');
 
         // シーンからAnimationMixerを持つオブジェクト（モデルのシーン）を見つける
-        let modelScene: THREE.Object3D | null = null;
+        const validNode = { current: null as THREE.Object3D | null };
         let activeAnimations: THREE.AnimationClip[] = [];
 
-        scene.traverse((obj: any) => {
+        scene.traverse((obj: THREE.Object3D) => {
           if (obj.userData?.mixer) {
-            modelScene = obj;
+            validNode.current = obj;
             const mixer = obj.userData.mixer as THREE.AnimationMixer;
             console.log('Found mixer on object:', obj.type, obj.name);
+            // @ts-expect-error - _actions is private
             console.log('Mixer actions:', mixer._actions?.length);
 
             // mixerから実行中のアクションのクリップを取得
-            const actions = mixer._actions || [];
-            const clips = actions
-              .filter((action: any) => action._clip)
-              .map((action: any) => action._clip);
+            // @ts-expect-error - _actions is private
+            const actions: THREE.AnimationAction[] = mixer._actions || [];
+            const clips = actions.map((action) => action.getClip());
 
             console.log('Extracted animation clips:', clips.length);
 
@@ -166,6 +166,8 @@ export function ExportGLTF() {
             }
           }
         });
+
+        const modelScene = validNode.current;
 
         if (!modelScene) {
           console.error('Model scene with mixer not found');

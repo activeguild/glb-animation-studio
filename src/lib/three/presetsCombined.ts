@@ -322,9 +322,9 @@ export const glitch: AnimationPreset = {
     (intensity, duration) => {
       const steps = 60;
       const times = KeyframeBuilder.timeArray(steps, duration);
-      const posX = times.map((t) => (Math.random() > 0.9 ? (Math.random() - 0.5) * intensity : 0));
-      const posY = times.map((t) => (Math.random() > 0.9 ? (Math.random() - 0.5) * intensity : 0));
-      const scale = times.map((t) => (Math.random() > 0.95 ? 1 + (Math.random() - 0.5) * intensity * 0.3 : 1));
+      const posX = times.map(() => (Math.random() > 0.9 ? (Math.random() - 0.5) * intensity : 0));
+      const posY = times.map(() => (Math.random() > 0.9 ? (Math.random() - 0.5) * intensity : 0));
+      const scale = times.map(() => (Math.random() > 0.95 ? 1 + (Math.random() - 0.5) * intensity * 0.3 : 1));
       const scaleValues = scale.flatMap((s) => [s, s, s]);
       return [
         new THREE.NumberKeyframeTrack('.position[x]', times, posX),

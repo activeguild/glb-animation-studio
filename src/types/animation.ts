@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 
 export type AnimationCategory = 'rotation' | 'translation' | 'scale' | 'combined' | 'easing';
 
