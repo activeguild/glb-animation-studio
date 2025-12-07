@@ -11,6 +11,7 @@ const categories: { id: AnimationCategory; label: string }[] = [
   { id: 'translation', label: '移動' },
   { id: 'scale', label: 'スケール' },
   { id: 'combined', label: '複合' },
+  { id: 'emote', label: 'エモート' },
   { id: 'easing', label: 'イージング' },
 ];
 
