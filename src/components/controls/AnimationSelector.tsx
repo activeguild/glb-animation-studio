@@ -13,6 +13,8 @@ const categories: { id: AnimationCategory; label: string }[] = [
   { id: 'combined', label: '複合' },
   { id: 'emote', label: 'エモート' },
   { id: 'easing', label: 'イージング' },
+  { id: 'physics', label: '物理' },
+  { id: 'character', label: 'キャラクター' },
 ];
 
 export function AnimationSelector() {

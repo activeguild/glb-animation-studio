@@ -495,11 +495,19 @@ export * from './presetsEmote';
 // イージング系をインポート
 export * from './presetsEasing';
 
+// 物理シミュレーション系をインポート
+export * from './presetsPhysics';
+
+// キャラクターアクション系をインポート
+export * from './presetsCharacter';
+
 // すべてのプリセットを配列にまとめる
 import * as scale from './presetsScale';
 import * as combined from './presetsCombined';
 import * as easing from './presetsEasing';
 import * as emote from './presetsEmote';
+import * as physics from './presetsPhysics';
+import * as character from './presetsCharacter';
 
 export const allPresets: AnimationPreset[] = [
   // 回転系（12種類）
@@ -581,6 +589,60 @@ export const allPresets: AnimationPreset[] = [
   easing.backOut,
   easing.circular,
   easing.exponential,
+
+  // 物理シミュレーション系（25種類）
+  physics.gravityFall,
+  physics.gravityBounce,
+  physics.simpleSpring,
+  physics.dampedSpring,
+  physics.pendulumSwing,
+  physics.magneticAttraction,
+  physics.inertialDrift,
+  physics.centrifugalSpin,
+  physics.projectileArc,
+  physics.orbitGravity,
+  physics.doublePendulum,
+  physics.springRebound,
+  physics.frictionSlide,
+  physics.wavePropagation,
+  physics.torqueRotation,
+  physics.elasticCollision,
+  physics.gyroscopicPrecession,
+  physics.airResistance,
+  physics.coupledOscillators,
+  physics.newtonsCradle,
+  physics.turbulentFlow,
+  physics.vortexMotion,
+  physics.chaosSystem,
+  physics.resonanceVibration,
+  physics.fluidBuoyancy,
+
+  // キャラクターアクション系（25種類）
+  character.walkCycle,
+  character.runCycle,
+  character.idleBreathing,
+  character.turnAround,
+  character.sitDown,
+  character.standUp,
+  character.pointGesture,
+  character.wavingHand,
+  character.headTilt,
+  character.jumpAction,
+  character.punchAttack,
+  character.kickAttack,
+  character.blockDefense,
+  character.dodgeRoll,
+  character.climbUp,
+  character.crawl,
+  character.stumble,
+  character.spinAttack,
+  character.backstep,
+  character.comboAttack,
+  character.celebrationDance,
+  character.sneakWalk,
+  character.getHitReaction,
+  character.chargePower,
+  character.deathFall,
 ];
 
 // カテゴリ別にグループ化
@@ -591,5 +653,7 @@ export const presetsByCategory = {
   combined: allPresets.filter((p) => p.category === 'combined'),
   emote: allPresets.filter((p) => p.category === 'emote'),
   easing: allPresets.filter((p) => p.category === 'easing'),
+  physics: allPresets.filter((p) => p.category === 'physics'),
+  character: allPresets.filter((p) => p.category === 'character'),
 };
 
