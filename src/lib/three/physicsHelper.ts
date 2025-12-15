@@ -232,9 +232,6 @@ export class PhysicsHelper {
       xValues.push(x);
       zValues.push(z);
 
-      // Kepler's second law approximation - 近日点で速い
-      const r = Math.sqrt(x * x + z * z);
-      const speedFactor = 1 / (r + 0.1);
       times.push(i / (steps - 1));
     }
 
