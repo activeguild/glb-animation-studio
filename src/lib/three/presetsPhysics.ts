@@ -434,7 +434,7 @@ export const airResistance: AnimationPreset = {
       const steps = 60;
       const times = KeyframeBuilder.timeArray(steps, duration);
 
-      const xValues = PhysicsHelper.exponentialDecay(0, -intensity * 5, 2.5, steps, duration);
+      const xValues = PhysicsHelper.exponentialDecay(0, -intensity * 5, steps, duration);
       const yValues = times.map((t, i) => {
         const fallSpeed = PhysicsHelper.exponentialDecay(intensity * 3, 1.5, steps, duration);
         return Math.max(0, intensity * 3 - fallSpeed[i] * t);
@@ -553,7 +553,7 @@ export const vortexMotion: AnimationPreset = {
       const steps = 120;
       const times = KeyframeBuilder.timeArray(steps, duration);
 
-      const values = times.map((t, i) => {
+      const values = times.map((t) => {
         const progress = t / duration;
         const radius = intensity * 3 * (1 - progress);
         const angle = progress * Math.PI * 8 * intensity;

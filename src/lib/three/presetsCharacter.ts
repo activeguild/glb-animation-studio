@@ -104,7 +104,7 @@ export const turnAround: AnimationPreset = {
         steps
       );
 
-      const xShift = times.map((t, i) => {
+      const xShift = times.map((t) => {
         const progress = t / duration;
         return progress < 0.5 ? Math.sin(progress * Math.PI) * intensity * 0.3 : 0;
       });
